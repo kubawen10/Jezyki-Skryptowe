@@ -8,9 +8,9 @@ def get_biggest_file():
         bytes_value = utils.get_number_of_bytes(line)
         if(bytes_value > biggest):
             try:
-                path = line.split()[-4]
+                path = utils.get_path(line)
                 biggest = bytes_value
-            except IndexError:
+            except Exception:
                 # if there is an error when getting path, pass this line
                 pass
 

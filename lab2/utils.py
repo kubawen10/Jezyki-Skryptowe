@@ -1,12 +1,22 @@
 import sys
 from datetime import datetime
 
+def is_valid(line):
+    return len(line.split()) == 10
+
 def get_request_code(line):
     try:
         code = int(line.split()[-2])
         return code
     except (IndexError, ValueError):
         return None
+    
+def get_path(line):
+    words = line.split()
+    if len(words) != 10: 
+        raise Exception("Wrong format")
+    else:
+        return words[-4]
 
 def get_number_of_given_code_requests(code):
     num = 0

@@ -7,10 +7,10 @@ def get_graphics_download_ratio():
     for line in sys.stdin:
         bytes_value = utils.get_number_of_bytes(line)
         try:
-            if(bytes_value != 0 and line.split()[-4].endswith(('.gif', '.jpg', '.jpeg', '.xbm'))):
+            if(bytes_value != 0 and utils.get_path(line).endswith(('.gif', '.jpg', '.jpeg', '.xbm'))):
                 graphics_bytes += bytes_value
             all_bytes += bytes_value
-        except IndexError:
+        except Exception:
             # if there is an error when getting path, pass this line
             pass
 

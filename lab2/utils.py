@@ -12,11 +12,12 @@ def get_request_code(line):
         return None
     
 def get_path(line):
-    words = line.split()
-    if len(words) != 10: 
-        raise Exception("Wrong format")
+    path = line.split('"')[1].split()
+    if len(path) == 3 or len(path) == 2: 
+        return path[1]
     else:
-        return words[-4]
+        print(line)
+        raise Exception("Wrong format!")
 
 def get_number_of_given_code_requests(code):
     num = 0

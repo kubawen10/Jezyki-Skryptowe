@@ -6,4 +6,3 @@ def get_number_of_code_200_requests():
 if __name__ == '__main__':
     get_number_of_code_200_requests()
 
-

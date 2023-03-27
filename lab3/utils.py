@@ -18,11 +18,11 @@ def get_code(line):
     return int(line.split()[-2])
 
 def get_bytes(line):
-    bytes_value = line.split()[-1]
+    bytes_value =  line.split()[-1]
     return 0 if bytes_value == '-' else int(bytes_value)
 
 def is4xx(code):
-    return code >= 400 and code < 500
+    return code >=400 and code < 500
 
 def is5xx(code):
     return code >=500 and code < 600

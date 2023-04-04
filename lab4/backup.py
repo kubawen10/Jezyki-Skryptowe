@@ -3,9 +3,7 @@ import os
 from datetime import datetime
 from subprocess import run
 import csv
-
 import utils
-
 if __name__ == '__main__':
     # validate args
     if len(sys.argv) != 2 or not os.path.isdir(sys.argv[1]):
@@ -13,7 +11,6 @@ if __name__ == '__main__':
         sys.exit()
 
     # check if backup directory was specified, if not use default
-
     target_dir = utils.specify_backup_directory()
 
     if not os.path.exists(target_dir):

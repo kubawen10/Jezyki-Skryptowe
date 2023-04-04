@@ -3,7 +3,6 @@ import os
 import csv
 import shutil
 from subprocess import run
-
 import utils
 
 def remove_contents(target):

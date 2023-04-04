@@ -60,3 +60,4 @@ if __name__ == '__main__':
             remove_contents(dest)
 
     run(['unzip', archive_to_restore, '-d', dest])
+    

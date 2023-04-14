@@ -1,5 +1,8 @@
 import os
 from parser_z2 import *
+from logging_z3 import *
+from statistics_z4 import *
+
 def readFile(path: str):
     if not os.path.isfile(path):
         print(path)
@@ -8,8 +11,30 @@ def readFile(path: str):
     
     with open(path) as file:
         for log in file:
-            yield parse_entry(log)
+            yield log
 
 if __name__ == '__main__':
-    for a in readFile('./shorter.log'):
-        print(get_message_type(a.message))
+    logger = get_loggin_function()
+    entries = []
+    user_acc = get_user_accumulation_function()
+
+    for log in readFile('./SSH.log'):
+        parsed_entry = parse_entry(log)
+        entries.append(parsed_entry)
+
+        #logger(parsed_entry)
+
+        user_acc(parsed_entry)
+
+    
+    #print(get_n_random_entries_from_random_user(user_acc(None)))
+    print(get_least_and_most_logged_in_users(user_acc(None)))
+
+
+
+
+
+# opens with Accepted password or 
+
+
+        

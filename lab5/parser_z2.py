@@ -3,11 +3,13 @@ from collections import namedtuple
 from datetime import datetime
 from enum import Enum
 
-LOG_PATTERN = re.compile(r"(?P<date>\w+\s\d+\s\d{2}:\d{2}:\d{2})\s(?P<host>.+)\ssshd\[(?P<pid>\d+)\]:\s(?P<message>.+)")
+LOG_PATTERN = re.compile(r"(?P<date>\w+\s+\d+\s\d{2}:\d{2}:\d{2})\s(?P<host>.+)\ssshd\[(?P<pid>\d+)\]:\s(?P<message>.+)")
 log_entry = namedtuple("Log_Entry", ['date', 'host', 'pid', 'message'])
 
 def parse_entry(log: str):
     match = LOG_PATTERN.match(log)
+    if not match:
+        print(log)
     return log_entry(datetime.strptime(match.group('date'), '%b %d %H:%M:%S'),
                      match.group('host'),
                      int(match.group('pid')),
@@ -16,17 +18,17 @@ def parse_entry(log: str):
 
 IPV4_PATTERN = re.compile(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}")
 
-def get_ipv4s_from_log(log: log_entry):
-    return IPV4_PATTERN.findall(log.message)
+def get_ipv4s_from_log(entry: log_entry):
+    return IPV4_PATTERN.findall(entry.message)
 
 # accepts: user=name ; user name; but not: user request or user authentication
-USER_PATTERN = re.compile(r"(?<=user[=\s])(?!request)(?!authentication)(\w+)")
+USER_PATTERN = re.compile(r"(?<=[^r]user[=\s])(?!request)(?!authentication)(\w+)")
 
-def get_user_from_log(log: log_entry):
-    match = USER_PATTERN.search(log.message)
+def get_user_from_log(entry: log_entry):
+    match = USER_PATTERN.search(entry.message)
     return match.group(0) if match else None
 
-SUCCESSFUL_LOGIN_PATTERN = re.compile(r'Accepted password')
+SUCCESSFUL_LOGIN_PATTERN = re.compile(r'session opened')
 UNSUCCESSFUL_LOGIN_PATTERN = re.compile(r'authentication failure')
 SESSION_CLOSED_PATTERN = re.compile(r'session closed|Received disconnect|Connection closed')
 FAILED_PASSWORD_PATTERN = re.compile(r'Failed password')

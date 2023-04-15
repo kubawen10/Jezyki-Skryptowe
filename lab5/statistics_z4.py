@@ -1,14 +1,16 @@
-from parser_z2 import log_entry, get_user_from_log, get_message_type, MessageType
+from parser_z2 import log_entry, get_user_from_entry, get_message_type, MessageType
 import random
+from typing import List
+import statistics
 
-def get_user_accumulation_function():
+def get_user_entries_accumulation_function():
     user_entries = dict()
 
     def accumulate(entry: log_entry):
         if not entry:
             return user_entries
         
-        user = get_user_from_log(entry)
+        user = get_user_from_entry(entry)
         
 
         if user and user in user_entries:
@@ -26,6 +28,50 @@ def get_n_random_entries_from_random_user(user_entries: dict):
 
     random_entries = random.sample(entries, random_entries_num)
     return user, random_entries
+
+def get_session_time_mean_and_stddev(entries: List[log_entry]):
+    connection_opened = dict()
+    connection_times = []
+
+    for entry in entries:
+        msg_type = get_message_type(entry.message)
+        # sometimes there is one line that is other and it doesnt have close, eg PAM service...
+        # sometimes there is connection closed without starting one
+        if msg_type != MessageType.OTHER and msg_type != MessageType.SESSION_CLOSED and entry.pid not in connection_opened:
+            connection_opened[entry.pid] = entry.date
+        elif msg_type == MessageType.SESSION_CLOSED and entry.pid in connection_opened:
+            #abs because it goes from Dec to Jan and year isnt specified so it is 1900 by default so difference is negative
+            connection_time_seconds = abs((entry.date - connection_opened[entry.pid]).total_seconds())
+
+            connection_times.append(connection_time_seconds)
+            del connection_opened[entry.pid]
+
+    return statistics.mean(connection_times), statistics.stdev(connection_times)
+        
+def get_user_session_time_mean_and_stddev(entries: List[log_entry]):
+    connection_opened = dict()
+    user_connection_times = dict()
+
+    for entry in entries:
+        user = get_user_from_entry(entry)
+        msg_type = get_message_type(entry.message)
+
+        # sometimes there is one line that is other and it doesnt have close, eg PAM service...
+        # sometimes there is connection closed without starting one
+        if user and msg_type != MessageType.OTHER and msg_type != MessageType.SESSION_CLOSED and entry.pid not in connection_opened:
+            connection_opened[entry.pid] = (user, entry.date)
+        elif get_message_type(entry.message) == MessageType.SESSION_CLOSED and entry.pid in connection_opened:
+            user, connection_open = connection_opened[entry.pid]
+            connection_time_seconds = abs((entry.date - connection_open).total_seconds())
+
+            if user in user_connection_times:
+                user_connection_times[user].append(connection_time_seconds)
+            else:
+                user_connection_times[user] = [connection_time_seconds]
+
+            del connection_opened[entry.pid]
+
+    return {user: (statistics.mean(connection_times), statistics.stdev(connection_times)) for user, connection_times in user_connection_times.items() if len(connection_times) > 1}
 
 def get_least_and_most_logged_in_users(user_entries: dict):
     user_logins = dict()

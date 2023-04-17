@@ -28,11 +28,11 @@ def get_user_from_entry(entry: log_entry):
     match = USER_PATTERN.search(entry.message)
     return match.group(0) if match else None
 
-SUCCESSFUL_LOGIN_PATTERN = re.compile(r'session opened')
+SUCCESSFUL_LOGIN_PATTERN = re.compile(r'Accepted password for')
 SESSION_CLOSED_PATTERN = re.compile(r'session closed|Received disconnect|Connection closed|Disconnecting:|Connection reset')
 #UNSUCCESSFUL_LOGIN_PATTERN = re.compile(r'authentication failure')
 UNSUCCESSFUL_LOGIN_PATTERN = re.compile(r'^(?!PAM).+(authentication failure)')
-FAILED_PASSWORD_PATTERN = re.compile(r'Failed password')
+FAILED_PASSWORD_PATTERN = re.compile(r'Failed password for')
 INVALID_USERNAME_PATTERN = re.compile(r'[I,i]nvalid user')
 BREAK_IN_PATTERN = re.compile(r"POSSIBLE BREAK-IN ATTEMPT")
 

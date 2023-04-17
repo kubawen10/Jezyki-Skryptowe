@@ -43,7 +43,7 @@ def get_loggin_function(logging_level=logging.DEBUG):
         msg_name = msg_type.name
 
 
-        if msg_type == MessageType.SUCCESSFUL_LOGIN or msg_type == MessageType.SESSION_CLOSED:
+        if msg_type in (MessageType.SUCCESSFUL_LOGIN, MessageType.SESSION_CLOSED):
             logging.info(msg_name)
         elif msg_type == MessageType.UNSUCCESSFUL_LOGIN:
             logging.warning(msg_name)

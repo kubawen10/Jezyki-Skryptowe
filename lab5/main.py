@@ -16,7 +16,7 @@ def readFile(path: str):
 if __name__ == '__main__':
     logger = get_loggin_function()
     entries = []
-    user_entries_acc = get_user_entries_accumulation_function()
+    user_entries_accumulation = get_user_entries_accumulation_function()
 
     for log in readFile('./SSH.log'):
         parsed_entry = parse_entry(log)
@@ -24,13 +24,13 @@ if __name__ == '__main__':
 
         #logger(parsed_entry)
 
-        #user_entries_acc(parsed_entry)
+        user_entries_accumulation(parsed_entry)
 
     
     #print(get_n_random_entries_from_random_user(user_acc(None)))
     #print(get_least_and_most_logged_in_users(user_entries_acc(None)))
     #print(get_session_time_mean_and_stddev(entries))
-    print(get_user_session_time_mean_and_stddev(entries))
+    #print(get_user_session_time_mean_and_stddev(entries))
 
 
 

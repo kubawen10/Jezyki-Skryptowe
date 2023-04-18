@@ -7,9 +7,10 @@ LOG_PATTERN = re.compile(r"(?P<date>\w+\s+\d+\s\d{2}:\d{2}:\d{2})\s(?P<host>.+)\
 log_entry = namedtuple("Log_Entry", ['date', 'host', 'pid', 'message'])
 
 def parse_entry(entry: str):
+    if not entry:
+        return None
+    
     match = LOG_PATTERN.match(entry)
-    if not match:
-        print(entry)
     return log_entry(datetime.strptime(match.group('date'), '%b %d %H:%M:%S'),
                      match.group('host'),
                      int(match.group('pid')),
@@ -19,12 +20,16 @@ def parse_entry(entry: str):
 IPV4_PATTERN = re.compile(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}")
 
 def get_ipv4s_from_entry(entry: log_entry):
+    if not entry: 
+        return None
     return IPV4_PATTERN.findall(entry.message)
 
 # accepts: user=name ; user name; but not: user request or user authentication
 USER_PATTERN = re.compile(r"(?<=[^r]user[=\s])(?!request)(?!authentication)(\w+)")
 
 def get_user_from_entry(entry: log_entry):
+    if not entry:
+        return None
     match = USER_PATTERN.search(entry.message)
     return match.group(0) if match else None
 
@@ -55,6 +60,9 @@ class MessageType(Enum):
     OTHER = 6
 
 def get_message_type(message: str):
+    if not message:
+        return None
+    
     for i, pattern in enumerate(message_pattern_list):
         if pattern.search(message):
             return MessageType(i)

@@ -33,7 +33,7 @@ def bytes_of_entry(entry: log_entry):
 
     return bytes_for_date + bytes_for_host + bytes_for_app_and_braces + bytes_for_skipped_chars + bytes_for_message
 
-def get_loggin_function(logging_level=logging.DEBUG):
+def get_logging_function(logging_level=logging.DEBUG):
     logging_config(logging_level)
     
     def logging_function(entry: log_entry):

@@ -2,6 +2,18 @@ import logging
 import sys
 from parser_z2 import log_entry, MessageType, get_message_type
 
+def logging_level_str_to_type(level: str):
+    match level:
+        case 'd':
+            return logging.DEBUG
+        case 'i':
+            return logging.INFO
+        case 'w':
+            return logging.WARNING
+        case 'e':
+            return logging.ERROR
+        case 'c':
+            return logging.CRITICAL
 
 def logging_config(logging_level=logging.DEBUG):
     logging_formater = logging.Formatter("%(asctime)s\t%(levelname)s: %(message)s")
@@ -33,8 +45,8 @@ def bytes_of_entry(entry: log_entry):
 
     return bytes_for_date + bytes_for_host + bytes_for_app_and_braces + bytes_for_skipped_chars + bytes_for_message
 
-def get_logging_function(logging_level=logging.DEBUG):
-    logging_config(logging_level)
+def get_logging_function(logging_level: str):
+    logging_config(logging_level_str_to_type(logging_level))
     
     def logging_function(entry: log_entry):
         logging.debug(f"Bytes read: {bytes_of_entry(entry)}")

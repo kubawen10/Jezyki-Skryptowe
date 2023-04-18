@@ -3,26 +3,22 @@ import random
 from typing import List
 import statistics
 
-def get_user_entries_accumulation_function():
+def get_user_entries(entries: List[log_entry]):
     user_entries = dict()
 
-    def accumulate(entry: log_entry):
-        if not entry:
-            return user_entries
-        
+    for entry in entries:
         user = get_user_from_entry(entry)
-        
 
         if user and user in user_entries:
             user_entries[user].append(entry)
         elif user:
             user_entries[user] = [entry]
 
-        return user_entries
-    
-    return accumulate
+    return user_entries
 
-def get_n_random_entries_from_random_user(user_entries: dict):
+def get_n_random_entries_from_random_user(entries: List[log_entry]):
+    user_entries = get_user_entries(entries)
+
     user, entries = random.choice(list(user_entries.items()))
     random_entries_num = random.randint(1, len(entries))
 
@@ -73,7 +69,8 @@ def get_user_session_time_mean_and_stddev(entries: List[log_entry]):
 
     return {user: (statistics.mean(connection_times), statistics.stdev(connection_times)) for user, connection_times in user_connection_times.items() if len(connection_times) > 1}
 
-def get_least_and_most_logged_in_users(user_entries: dict):
+def get_least_and_most_logged_in_users(entries: List[log_entry]):
+    user_entries = get_user_entries(entries)
     user_logins = dict()
 
     for user, entries in user_entries.items():
@@ -88,4 +85,5 @@ def get_least_and_most_logged_in_users(user_entries: dict):
     min_user = min(user_logins, key=user_logins.get)
     max_user = max(user_logins, key=user_logins.get)
 
+    print(user_logins)
     return min_user, max_user

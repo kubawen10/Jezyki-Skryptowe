@@ -67,7 +67,8 @@ def get_user_session_time_mean_and_stddev(entries: List[log_entry]):
 
             del connection_opened[entry.pid]
 
-    return {user: (statistics.mean(connection_times), statistics.stdev(connection_times)) for user, connection_times in user_connection_times.items() if len(connection_times) > 1}
+    return {user: (statistics.mean(connection_times), statistics.stdev(connection_times)) 
+            for user, connection_times in user_connection_times.items() if len(connection_times) > 1}
 
 def get_least_and_most_logged_in_users(entries: List[log_entry]):
     user_entries = get_user_entries(entries)

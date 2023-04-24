@@ -42,7 +42,7 @@ def is_bruteforce(entries: List[log_entry], interval):
 
 
 
-def detect_bruteforce(entries: List[log_entry], max_interval, single_user=False):
+def detect_bruteforce(entries: List[log_entry], max_interval=5, single_user=False):
     ip_failed_entries = get_failed_entries_from_ips(entries)
 
     if single_user:

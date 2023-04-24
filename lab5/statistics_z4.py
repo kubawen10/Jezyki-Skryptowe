@@ -2,6 +2,7 @@ from parser_z2 import log_entry, get_user_from_entry, get_message_type, MessageT
 import random
 from typing import List
 import statistics
+from datetime import datetime
 
 def get_user_entries(entries: List[log_entry]):
     user_entries = dict()
@@ -20,10 +21,21 @@ def get_n_random_entries_from_random_user(entries: List[log_entry]):
     user_entries = get_user_entries(entries)
 
     user, entries = random.choice(list(user_entries.items()))
+    
     random_entries_num = random.randint(1, len(entries))
 
     random_entries = random.sample(entries, random_entries_num)
     return user, random_entries
+
+def calculate_connection_time_seconds(date_start, date_end):
+    time = (date_end - date_start).total_seconds()
+    
+    if(time >= 0):
+        return time
+    
+    time += (datetime(1901, 1, 1) - (datetime(1900,1,1))).total_seconds()
+    return time
+        
 
 def get_session_time_mean_and_stddev(entries: List[log_entry]):
     connection_opened = dict()
@@ -36,9 +48,7 @@ def get_session_time_mean_and_stddev(entries: List[log_entry]):
         if msg_type != MessageType.OTHER and msg_type != MessageType.SESSION_CLOSED and entry.pid not in connection_opened:
             connection_opened[entry.pid] = entry.date
         elif msg_type == MessageType.SESSION_CLOSED and entry.pid in connection_opened:
-            #abs because it goes from Dec to Jan and year isnt specified so it is 1900 by default so difference is negative
-            connection_time_seconds = abs((entry.date - connection_opened[entry.pid]).total_seconds())
-
+            connection_time_seconds = calculate_connection_time_seconds(connection_opened[entry.pid], entry.date)
             connection_times.append(connection_time_seconds)
             del connection_opened[entry.pid]
 
@@ -58,7 +68,7 @@ def get_user_session_time_mean_and_stddev(entries: List[log_entry]):
             connection_opened[entry.pid] = (user, entry.date)
         elif get_message_type(entry.message) == MessageType.SESSION_CLOSED and entry.pid in connection_opened:
             user, connection_open = connection_opened[entry.pid]
-            connection_time_seconds = abs((entry.date - connection_open).total_seconds())
+            connection_time_seconds = calculate_connection_time_seconds(connection_open, entry.date)
 
             if user in user_connection_times:
                 user_connection_times[user].append(connection_time_seconds)

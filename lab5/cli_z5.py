@@ -19,7 +19,7 @@ def configure_parser():
     connection_subparser.add_argument("-u", "--user_connections", action="store_true", help="Get mean and stddev of connection time for each user. (z4b2)")
     subparsers.add_parser("least_and_most", help="Get least and most logged in users. (z4c)")
     bruteforce_subparser = subparsers.add_parser("bruteforce", help="Detect bruteforce attempts. (z1r)")
-    bruteforce_subparser.add_argument("-i", "--interval", type=int, help="Maximum interval between attempts.", default=5)
+    bruteforce_subparser.add_argument("-i", "--interval", type=int, help="Maximum interval between attempts. Default = 5", default=5)
     bruteforce_subparser.add_argument("-u", "--user", action="store_true", help="Detect attacks on single username.")
 
     return parser

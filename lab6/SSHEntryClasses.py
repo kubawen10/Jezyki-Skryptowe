@@ -91,16 +91,6 @@ class SSHOther(SSHLogEntry):
     def __init__(self, entry: str) -> None:
         super().__init__(entry)
         
-    def validate():
+    def validate(self):
         return True
         
-        
-msg = 'Dec 10 11:03:51 LabSZ sshd[25453]: Failed password for root from 183.62.140.253 port 52762 ssh2'
-msg2 = 'Dec 10 11:03:51 abSZ sshd[25453]: Failed password for root from 183.62.140.253 port 52762 ssh2'
-c = SSHFailedPassword(msg)
-b = SSHFailedPassword(msg2)
-print(c.validate())
-print(c.has_ip)
-print(repr(c))
-
-print(c==b)

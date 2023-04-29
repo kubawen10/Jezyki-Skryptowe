@@ -1,4 +1,4 @@
-    import re
+import re
 from collections import namedtuple
 from datetime import datetime
 from enum import Enum

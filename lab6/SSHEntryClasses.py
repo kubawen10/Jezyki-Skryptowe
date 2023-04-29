@@ -1,48 +1,106 @@
 from ipaddress import IPv4Address
-import re
-from datetime import datetime
+from SSHRegexParser import SSHRegexParser
+import abc
 
-class SSHLogEntry:
-    LOG_PATTERN = re.compile(r"(?P<date>\w+\s+\d+\s\d{2}:\d{2}:\d{2})\s(?P<host>.+)\ssshd\[(?P<pid>\d+)\]:\s(?P<message>.+)")
-    IPV4_PATTERN = re.compile(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}")
-    
+class SSHLogEntry(metaclass = abc.ABCMeta):
     def __init__(self, entry: str) -> None:
-        pattern_match = SSHLogEntry.LOG_PATTERN.match(entry)
-        self.date = datetime.strptime(pattern_match.group('date'), '%b %d %H:%M:%S')
-        self.host = pattern_match.group('host')
-        self.pid = int(pattern_match.group('pid'))
-        self.message = pattern_match.group('message')
-    
+        self.date, self.host, self.pid, self.message = SSHRegexParser.get_primary_info_from_entry(entry)
+        self._raw_message = entry
+        
     def __str__(self) -> str:
         date_str = self.date.strftime('%d %B %H:%M')
         return f"Date: {date_str}\t\tHost: {self.host}\tPid: {self.pid}\tMessage: {self.message}"
     
     def get_ip(self) -> IPv4Address|None:
-        ips = SSHLogEntry.IPV4_PATTERN.findall(self.message)
+        ips = SSHRegexParser.get_IPs_from_message(self.message)
         
         if len(ips) > 0:
-            return ips[0]
+            return IPv4Address(ips[0])
         else:
             return None
         
-        
-test = SSHLogEntry("Dec 10 07:07:38 LabSZ sshd[24206]: pam_unix(sshd:auth): check pass; user unknown")
-print(test)
+    @abc.abstractmethod
+    def validate(self):
+        date, host, pid, message = SSHRegexParser.get_primary_info_from_entry(self._raw_message)
+        if not (self.date == date and self.host == host and self.pid == pid and self.message == message):
+            return False
+        return True
+    
+    @property
+    def has_ip(self):
+        return self.get_ip() != None
+    
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}: {self.__dict__}"
+    
+    def __eq__(self, other) -> bool:
+        return not (self > other or self < other)
+    
+    def __gt__(self, other):
+        return (self.date, self.host, self.pid, self.message) > (other.date, other.host, other.pid, other.message)
+    
+    def __lt__(self, other):
+        return (self.date, self.host, self.pid, self.message) < (other.date, other.host, other.pid, other.message)
+    
 
 class SSHFailedPassword(SSHLogEntry):
-    FAILED_PASSWORD_PATTERN = re.compile(r"^Failed password for (invalid user )?(?P<user>\w+) from \d+\.\d+\.\d+\.\d+ port (?P<port>\d+) (?P<protocol>.+)")
-    pass
+    def __init__(self, entry: str) -> None:
+        super().__init__(entry)
+        info = SSHRegexParser.get_failed_password_info_from_message(self.message)
+        self.user = info['user']
+        self.port = info['port']
+        
+    def validate(self):
+        if not super().validate():
+            return False
+        
+        info = SSHRegexParser.get_failed_password_info_from_message(self.message)
+        return self.user == info['user'] and self.port == info['port']
+    
 
 class SSHAcceptedPassword(SSHLogEntry):
-    ACCEPTED_PASSWORD_PATTERN = re.compile(r"^Accepted password for (?P<user>\w+) from \d+\.\d+\.\d+\.\d+ port (?P<port>\d+) (?P<protocol>.+)")
-    pass
+    def __init__(self, entry: str) -> None:
+        super().__init__(entry)
+        info = SSHRegexParser.get_accepted_password_info_from_message(self.message)
+        self.user = info['user']
+        self.port = info['port']
+        
+    def validate(self):
+        if not super().validate():
+            return False
+        
+        info = SSHRegexParser.get_accepted_password_info_from_message(self.message)
+        return self.user == info['user'] and self.port == info['port']
+    
 
 class SSHError(SSHLogEntry):
-    ERROR_PATTERN = re.compile(r"error: (?P<error_message>.+)")
-    pass
+    def __init__(self, entry: str) -> None:
+        super().__init__(entry)
+        info = SSHRegexParser.get_error_info_from_message(self.message)
+        self.error_message = info['error_message']
+    
+    def validate(self):
+        if not super().validate():
+            return False
+        
+        info = SSHRegexParser.get_error_info_from_message(self.message)
+        return self.error_message == info['error_message']
+    
 
 class SSHOther(SSHLogEntry):
-    pass
-    
-    
-    
+    def __init__(self, entry: str) -> None:
+        super().__init__(entry)
+        
+    def validate():
+        return True
+        
+        
+msg = 'Dec 10 11:03:51 LabSZ sshd[25453]: Failed password for root from 183.62.140.253 port 52762 ssh2'
+msg2 = 'Dec 10 11:03:51 abSZ sshd[25453]: Failed password for root from 183.62.140.253 port 52762 ssh2'
+c = SSHFailedPassword(msg)
+b = SSHFailedPassword(msg2)
+print(c.validate())
+print(c.has_ip)
+print(repr(c))
+
+print(c==b)

@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 from typing import List
 
+# this class contains static methods used for parsing information from entries using regex
 class SSHRegexParser:
     def get_primary_info_from_entry(entry: str):
         LOG_PATTERN = re.compile(r"(?P<date>\w+\s+\d+\s\d{2}:\d{2}:\d{2})\s(?P<host>.+)\ssshd\[(?P<pid>\d+)\]:\s(?P<message>.+)")

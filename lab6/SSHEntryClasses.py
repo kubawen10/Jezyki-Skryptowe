@@ -37,10 +37,10 @@ class SSHLogEntry(metaclass = abc.ABCMeta):
         return not (self > other or self < other)
     
     def __gt__(self, other):
-        return (self.date, self.host, self.pid, self.message) > (other.date, other.host, other.pid, other.message)
+        return (self.date, self.pid, self.message) > (other.date, other.pid, other.message)
     
     def __lt__(self, other):
-        return (self.date, self.host, self.pid, self.message) < (other.date, other.host, other.pid, other.message)
+        return (self.date, self.pid, self.message) < (other.date, other.pid, other.message)
     
 
 class SSHFailedPassword(SSHLogEntry):

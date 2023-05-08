@@ -1,32 +1,26 @@
-from functools import lru_cache
+from functools import cache
+from zad4 import make_generator, fibonacci
+import time
 
+@cache
 def make_generator_mem(f):
-    def generator():
-        
-        @lru_cache(None)
-        def make_memoize_f(x):
-            return f(x)
+    mem_f = cache(f)
+    return make_generator(mem_f)
 
-        x = 1
-        while True:
-            yield make_memoize_f(x)
-            x+=1
-
-    return generator
-
-
-def fibonacci(n):
-    if n<=1:
-        return n
-    else:
-        return fibonacci(n-1) + fibonacci(n-2)
-
-def get_n(n, generator):
+def get_n(n, function, description):
+    print(f'{n} {description}')
+    generator = make_generator_mem(function)
     for i, j in enumerate(generator()):
-        print(j)
-        if i >= n-1:
-            print()
+        if (i >= n-1):
             break
 
-fib_gen = make_generator_mem(fibonacci)
-get_n(50, fib_gen)
+# it doesnt work in a way that fibonacci function memoizes recursively
+# but rather running generator next time works faster
+if __name__ == '__main__':
+    start = time.time()
+    get_n(35, fibonacci, "fibonacci numbers")
+    print(f"first time: {time.time() - start} seconds")
+    
+    start = time.time()
+    get_n(35, fibonacci, "fibonacci numbers second time")
+    print(f"second time: {time.time() - start} seconds")

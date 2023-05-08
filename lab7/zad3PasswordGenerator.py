@@ -18,16 +18,22 @@ class PasswordGenerator:
         self.index += 1
         return ''.join(random.choices(self.charset, k=self.length))
     
-generator = PasswordGenerator(5,3)
-for password in generator:
-    print(password)
-# cannot produce more
-for password in generator:
-    print(password)
 
-generator = PasswordGenerator(5,3)
-print()
-print(next(generator))
-print(next(generator))
-print(next(generator))
-print(next(generator))
+
+if __name__ == '__main__':
+    print("First generator (length = 5, count = 3)")
+    generator = PasswordGenerator(5,3)
+    for password in generator:
+        print(password)
+    print("Trying to generate more in for loop: ")
+    for password in generator:
+        print(password)
+    
+    
+    print("\nSecond generator (length = 5, count = 3)")
+    generator = PasswordGenerator(5,3)
+    print(next(generator))
+    print(next(generator))
+    print(next(generator))
+    print("Trying too many times: ")
+    print(next(generator))

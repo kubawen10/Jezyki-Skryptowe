@@ -1,36 +1,45 @@
-from functools import lru_cache
-
 def make_generator(f):
-    x = 1
     def generator():
-        nonlocal x
+        n = 1
         while True:
-            yield f(x)
-            x+=1
-
+            yield f(n)
+            n+=1
     return generator
 
-def fibonacci(n):
-    if n<=1:
-        return n
+def fibonacci(x):
+    if x<=1:
+        return x
     else:
-        return fibonacci(n-1) + fibonacci(n-2)
+        return fibonacci(x-1) + fibonacci(x-2)
 
-def get_n(n, generator):
+def get_n(n, function, description):
+    print(f'{n} {description}')
+    generator = make_generator(function)
     for i, j in enumerate(generator()):
         print(j)
-        if i >= n-1:
+        if (i >= n-1):
             print()
             break
 
-fib_gen = make_generator(fibonacci)
-#get_n(50, fib_gen)
+# doesnt work
+# def get_n(n, function, description):
+#     print(f'{n} {description}')
+#     generator = make_generator(function)
+#     for i, j in enumerate(generator()):
+#         print(j, end=', ')
+#         if (i >= n-1):
+#             print()
+#             break
 
-range_gen = make_generator(lambda x: x)
-get_n(5, range_gen)
+if __name__ == '__main__':
+    # takes time
+    get_n(40, fibonacci, "fibonacci numbers")
 
-mul2_gen = make_generator(lambda x: x*2)
-get_n(5, mul2_gen)
+    get_n(5, lambda x: x, "next numbers")
+
+    get_n(5, lambda x: x*2, "numbers x*2")
+    
+    get_n(5, lambda x: 2**x, "numbers 2**x")
 
 
 

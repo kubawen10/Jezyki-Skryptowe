@@ -21,6 +21,17 @@ def get_n(n, function, description):
             print()
             break
 
+
+if __name__ == '__main__':
+    # takes time
+    get_n(30, fibonacci, "fibonacci numbers")
+
+    get_n(5, lambda x: x, "next numbers")
+
+    get_n(5, lambda x: x*2, "numbers x*2")
+    
+    get_n(5, lambda x: 2**x, "numbers 2**x")
+
 # doesnt work
 # def get_n(n, function, description):
 #     print(f'{n} {description}')
@@ -30,16 +41,3 @@ def get_n(n, function, description):
 #         if (i >= n-1):
 #             print()
 #             break
-
-if __name__ == '__main__':
-    # takes time
-    get_n(40, fibonacci, "fibonacci numbers")
-
-    get_n(5, lambda x: x, "next numbers")
-
-    get_n(5, lambda x: x*2, "numbers x*2")
-    
-    get_n(5, lambda x: 2**x, "numbers 2**x")
-
-
-

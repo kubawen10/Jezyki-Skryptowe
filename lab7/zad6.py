@@ -19,6 +19,9 @@ log_functions = {
 }
 
 def log(level):
+    if level not in log_functions:
+        level = logging.DEBUG
+        
     def decorator(func_or_class):
         def wrapper(*args, **kwargs):
             start_date = datetime.now()

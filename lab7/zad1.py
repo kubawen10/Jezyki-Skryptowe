@@ -7,7 +7,7 @@ print(acronym(['Zaklad', 'Ubezpieczen', 'Spolecznych']))
 
 
 def median(numbers: List[int]):
-    sorted_numbers = numbers.sort()
+    sorted_numbers = sorted(numbers)
     length = len(numbers)
     return sorted_numbers[length//2] if length % 2 == 1 else (sorted_numbers[length//2 - 1] + sorted_numbers[length//2]) / 2
 
@@ -28,7 +28,7 @@ print(sqrt(3, 0.01))
 def make_alpha_dict(text: str):
     return {letter: [word for word in text.split() if letter in word] for letter in text.replace(' ', '')}
 
-print(make_alpha_dict('on i ona i on'))
+print(make_alpha_dict('on i ona'))
 
 
 # for each sublist, for each element in either flatten(sublist)->(is list or tuple) or [sublist]->(is not list or tuple but we need to iterate over something so [sublist])

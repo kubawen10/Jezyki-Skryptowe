@@ -1,4 +1,5 @@
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel, QVBoxLayout, QSizePolicy, QGridLayout, QFormLayout
+from PySide6.QtWidgets import QWidget, QLabel, QSizePolicy, QFormLayout
+from PySide6 import QtCore
 from entry import Entry
 
 class DescribedFramedLabel(QWidget):
@@ -7,8 +8,8 @@ class DescribedFramedLabel(QWidget):
         self.description = QLabel(description)
         self.data = QLabel()
         self.data.setStyleSheet("border: 1px solid black;")
-
         self.data.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.data.setAlignment(QtCore.Qt.AlignCenter)
     
     def desc_data(self):
         return self.description, self.data
@@ -44,8 +45,8 @@ class DetailWidget(QWidget):
 
     def update_data(self, entry: Entry):
         self.host.update_data(entry.address)
-        self.date.update_data(entry.date.date())
-        self.time.update_data(entry.date.time())
+        self.date.update_data(entry.date.date().isoformat())
+        self.time.update_data(entry.date.time().isoformat())
         self.timezone.update_data(entry.timezone)
         self.status.update_data(entry.response_code)
         self.method.update_data(entry.method)

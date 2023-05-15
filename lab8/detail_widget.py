@@ -7,7 +7,7 @@ class DescribedFramedLabel(QWidget):
         super().__init__()
         self.description = QLabel(description)
         self.data = QLabel()
-        self.data.setStyleSheet("border: 1px solid black;")
+        self.data.setStyleSheet("border: 1px solid black; color: white")
         self.data.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.data.setAlignment(QtCore.Qt.AlignCenter)
     
@@ -44,11 +44,21 @@ class DetailWidget(QWidget):
 
 
     def update_data(self, entry: Entry):
-        self.host.update_data(entry.address)
-        self.date.update_data(entry.date.date().isoformat())
-        self.time.update_data(entry.date.time().isoformat())
-        self.timezone.update_data(entry.timezone)
-        self.status.update_data(entry.response_code)
-        self.method.update_data(entry.method)
-        self.resource.update_data(entry.resource)
-        self.bytes.update_data(f'{entry.bytes} bytes')
+        if entry != None:
+            self.host.update_data(entry.address)
+            self.date.update_data(entry.date.date().isoformat())
+            self.time.update_data(entry.date.time().isoformat())
+            self.timezone.update_data(entry.timezone)
+            self.status.update_data(entry.response_code)
+            self.method.update_data(entry.method)
+            self.resource.update_data(entry.resource)
+            self.bytes.update_data(f'{entry.bytes} bytes')
+        else:
+            self.host.update_data("")
+            self.date.update_data("")
+            self.time.update_data("")
+            self.timezone.update_data("")
+            self.status.update_data("")
+            self.method.update_data("")
+            self.resource.update_data("")
+            self.bytes.update_data("")

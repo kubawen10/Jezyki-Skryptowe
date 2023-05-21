@@ -41,11 +41,10 @@ class MainWindow(QMainWindow):
         window.setLayout(window_layout)
         self.setCentralWidget(window)
 
-    def load_file(self, path):
-        load_result = self.entries.read_entries(path) 
+    def load_file(self, path): 
+        if not self.entries.read_entries(path):
+            QMessageBox.information(self, "Could not read file", "File is either in incorrect format or it is empty.")
         self.master_list.update_list(self.entries.entries)
-        if not load_result:
-            message = QMessageBox.information(self, "Could not read file", "File is either in incorrect format or it is empty.")
 
     def load_date_restricted(self, date_from, date_to):
         filtered = self.entries.get_entries_between(date_from, date_to)

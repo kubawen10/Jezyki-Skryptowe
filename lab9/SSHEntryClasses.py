@@ -43,13 +43,16 @@ class SSHLogEntry(metaclass = abc.ABCMeta):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}: {self.__dict__}"
     
-    def __eq__(self, other) -> bool:
+    # cannot type other as 'SSHLogEntry' since it should work with any object
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, SSHLogEntry):
+            return NotImplemented
         return not (self > other or self < other)
     
-    def __gt__(self, other) -> bool:
+    def __gt__(self, other: 'SSHLogEntry') -> bool:
         return (self.date, self.pid, self.message) > (other.date, other.pid, other.message)
     
-    def __lt__(self, other) -> bool:
+    def __lt__(self, other: 'SSHLogEntry') -> bool:
         return (self.date, self.pid, self.message) < (other.date, other.pid, other.message)
     
 
@@ -103,4 +106,3 @@ class SSHOther(SSHLogEntry):
         
     def validate(self) -> bool:
         return True
-        

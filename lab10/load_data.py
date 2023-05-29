@@ -38,28 +38,28 @@ def validate_columns(columns: List[str]):
         sys.exit(1)
 
 
-def station_provider(session):
-    stations_dict = {}
-    def get_station(station_name):
+
+def get_station(station_name, stations_dict, session):
         if station_name in stations_dict:
             return stations_dict[station_name]
         
         station = session.scalar(select(Station).where(Station.name == station_name))
         if station is not None:
+            stations_dict[station_name] = station
             return station
         
         station = Station(name = station_name)
         stations_dict[station_name] = station
 
         return station
-        
-    return get_station
 
 
 def load_data_to_database(data, db_name):
     engine = create_engine('sqlite:///'+ db_name +'.sqlite3')
+    stations = {}
+    rentals = []
+
     with Session(engine) as session:
-        get_station = station_provider(session)
         for row in data:
             id = int(row['UID wynajmu'])
             bike_number = int(row['Numer roweru'])
@@ -68,12 +68,12 @@ def load_data_to_database(data, db_name):
             rental_date = datetime.strptime(row['Data wynajmu'], date_fromat)
             return_date = datetime.strptime(row['Data zwrotu'], date_fromat)
 
-            rental_station = get_station(row['Stacja wynajmu'])
-            return_station = get_station(row['Stacja zwrotu'])
+            rental_station = get_station(row['Stacja wynajmu'],stations, session)
+            return_station = get_station(row['Stacja zwrotu'],stations, session)
 
             duration = int(row['Czas trwania'])
-
-            session.add(Rental(id=id, 
+            
+            rentals.append(Rental(id=id, 
                             bike_number=bike_number, 
                             rental_date=rental_date,
                             return_date=return_date,
@@ -81,6 +81,8 @@ def load_data_to_database(data, db_name):
                             return_station=return_station,
                             duration=duration))
             
+        session.add_all(stations.values())
+        session.add_all(rentals)
         session.commit()
 
 

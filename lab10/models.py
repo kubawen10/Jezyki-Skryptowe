@@ -10,7 +10,7 @@ class Base(DeclarativeBase):
 
 class Rental(Base):
     __tablename__ = 'rentals'
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     bike_number: Mapped[int] = mapped_column(Integer)
     rental_date: Mapped[datetime] = mapped_column(DateTime)
     return_date: Mapped[datetime] = mapped_column(DateTime)

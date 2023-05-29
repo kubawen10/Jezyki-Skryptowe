@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select, create_engine
-from models import Station, Rental, Base
+from sqlalchemy import select
+from models import Station, Rental
 
 
 def mean_duration_at_given_rental_station(station_name, engine):
@@ -17,7 +17,7 @@ def mean_duration_at_given_return_station(station_name, engine):
         return mean_duration(rentals)
     
 
-def number_of_different_bikes_parked_at_station(station_name, engine):
+def number_of_unique_bikes_parked_at_station(station_name, engine):
     with Session(engine) as session:
         statement = select(Rental).join(Station, Rental.return_station_id == Station.id).where(Station.name==station_name)
         rentals = session.execute(statement).all()
@@ -41,4 +41,10 @@ def mean_duration(rentals):
         duration_sum += rental[0].duration
 
     return duration_sum/len(rentals)
+
+def get_stations(engine):
+    with Session(engine) as session:
+        statement = select(Station)
+        return session.execute(statement).all()
+        
 

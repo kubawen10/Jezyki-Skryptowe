@@ -38,17 +38,28 @@ def validate_columns(columns: List[str]):
         sys.exit(1)
 
 
-def get_station(station_name, session):
-    station_name
-    rental_station = session.scalar(select(Station).where(Station.name == station_name))
-    if rental_station is None:
-        rental_station = Station(name = station_name)
-    return rental_station
+def station_provider(session):
+    stations_dict = {}
+    def get_station(station_name):
+        if station_name in stations_dict:
+            return stations_dict[station_name]
+        
+        station = session.scalar(select(Station).where(Station.name == station_name))
+        if station is not None:
+            return station
+        
+        station = Station(name = station_name)
+        stations_dict[station_name] = station
+
+        return station
+        
+    return get_station
 
 
-def load_data_to_database(data):
-    engine = create_engine('sqlite:///'+ sys.argv[2] +'.sqlite3')
+def load_data_to_database(data, db_name):
+    engine = create_engine('sqlite:///'+ db_name +'.sqlite3')
     with Session(engine) as session:
+        get_station = station_provider(session)
         for row in data:
             id = int(row['UID wynajmu'])
             bike_number = int(row['Numer roweru'])
@@ -57,8 +68,8 @@ def load_data_to_database(data):
             rental_date = datetime.strptime(row['Data wynajmu'], date_fromat)
             return_date = datetime.strptime(row['Data zwrotu'], date_fromat)
 
-            rental_station = get_station(row['Stacja wynajmu'], session)
-            return_station = get_station(row['Stacja zwrotu'], session)
+            rental_station = get_station(row['Stacja wynajmu'])
+            return_station = get_station(row['Stacja zwrotu'])
 
             duration = int(row['Czas trwania'])
 
@@ -75,11 +86,13 @@ def load_data_to_database(data):
 
 if __name__ == '__main__':
     validate_args()
+    csv_file = sys.argv[1]
+    db_name = sys.argv[2]
         
-    with open(sys.argv[1], 'r') as file:
+    with open(csv_file, 'r') as file:
         data = csv.DictReader(file)
         validate_columns(list(data.fieldnames))
-        load_data_to_database(list(data))
+        load_data_to_database(list(data), db_name)
         
 
 

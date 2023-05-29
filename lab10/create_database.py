@@ -13,9 +13,11 @@ def validate_args() -> bool:
         print("Such database already exists!")
         sys.exit(1)
 
+def create_database(database_name):
+    engine = create_engine('sqlite:///'+ database_name +'.sqlite3', echo=True)
+    Base.metadata.create_all(engine)
+
 
 if __name__ == '__main__':
     validate_args()
-
-    engine = create_engine('sqlite:///'+ sys.argv[1] +'.sqlite3', echo=True)
-    Base.metadata.create_all(engine)
+    create_database(sys.argv[1])
